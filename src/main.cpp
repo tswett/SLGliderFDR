@@ -17,6 +17,7 @@ struct imuRecord {
 };
 
 MPU6050 imu;
+unsigned long lastTime;
 
 void setup() {
     Serial.begin(9600);
@@ -41,6 +42,8 @@ void setup() {
         Serial.print(EEPROM.read(6 * readSampleIndex + 4) - 128); Serial.print("\t");
         Serial.print(EEPROM.read(6 * readSampleIndex + 5) - 128); Serial.print("\n");
     }
+
+    lastTime = millis();
 }
 
 int16_t forward, right, up;
@@ -69,5 +72,11 @@ void loop() {
         sampleIndex++;
     }
 
-    delay(100);
+    unsigned long currentTime = millis();
+    unsigned long nextTime = lastTime + 100;
+
+    if (currentTime < nextTime)
+        delay (nextTime - currentTime);
+    
+    lastTime = nextTime;
 }
